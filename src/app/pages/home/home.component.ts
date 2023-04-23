@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { WeatherService } from '../../services/weather.service'
+import { Component, OnInit } from "@angular/core";
+import { WeatherService } from "../../services/weather.service";
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  selector: "app-home",
+  templateUrl: "./home.component.html",
+  styleUrls: ["./home.component.scss"],
 })
 export class HomeComponent implements OnInit {
   public weather;
@@ -21,10 +21,31 @@ export class HomeComponent implements OnInit {
   public clouds: number;
   public visibility: number;
   public currentDate = new Date();
-  public tempPercentage = '50%';
+  public tempPercentage = "50%";
 
-  public daysWeekName = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  public monthsName = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  public daysWeekName = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+  ];
+  public monthsName = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
   public messagesArray = [];
   public messagesArrayPos = 0;
 
@@ -33,22 +54,20 @@ export class HomeComponent implements OnInit {
   public day = this.currentDate.getDate();
   public hour = this.currentDate.getHours();
 
-  constructor(private weatherService: WeatherService) { }
+  constructor(private weatherService: WeatherService) {}
 
   ngOnInit() {
-    this.weatherService.getWeather()
-      .subscribe(
-        res => {
-          this.weather = res;
-          console.log(res),
-            this.setData()
-        },
-        err => console.log(err)
-      );
+    this.weatherService.getWeather().subscribe(
+      (res) => {
+        this.weather = res;
+        console.log(res), this.setData();
+      },
+      (err) => console.log(err)
+    );
 
     setInterval(() => {
       if (this.messagesArrayPos > 4) {
-        this.messagesArrayPos = 0
+        this.messagesArrayPos = 0;
       } else {
         this.messagesArrayPos++;
       }
@@ -78,38 +97,93 @@ export class HomeComponent implements OnInit {
     this.setMessage_5();
   }
 
+  finalUrlImg(): string {
+    let iconName = this.icon;
+
+    if (this.icon == "10d") {
+      iconName = "09d";
+    }
+    if (this.icon == "10n") {
+      iconName = "09n";
+    }
+
+    if (this.icon.includes("13")) {
+      return iconName;
+    } else {
+      return iconName + "_" + this.currentSeason();
+    }
+  }
+
+  currentSeason() {
+    let season = "";
+
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth() + 1;
+    const day = this.currentDate.getDate();
+    const today = new Date(year + "-" + month + "-" + day);
+
+    const otoñoStart = new Date(year + "-03-21");
+    const otoñoEnd = new Date(year + "-06-20");
+
+    const inviernoStart = new Date(year + "-06-21");
+    const inviernoEnd = new Date(year + "-09-20");
+
+    const primaveraStart = new Date(year + "-09-21");
+    const primaveraEnd = new Date(year + "-12-20");
+
+    if (today > otoñoStart && today < otoñoEnd) {
+      season = "otoño";
+    } else if (today > inviernoStart && today < inviernoEnd) {
+      season = "invierno";
+    } else if (today > primaveraStart && today < primaveraEnd) {
+      season = "primavera";
+    } else {
+      season = "verano";
+    }
+
+    return season;
+  }
+
   public setMessage_0() {
-    this.messagesArray[0] = '¡ Buenas noches !';
+    this.messagesArray[0] = "¡ Buenas noches !";
     if (this.hour >= 6 && this.hour <= 12) {
-      this.messagesArray[0] = '¡ Buen día !';
-    } if (this.hour >= 13 && this.hour <= 18) {
-      this.messagesArray[0] = '¡ Buenas tardes !';
+      this.messagesArray[0] = "¡ Buen día !";
+    }
+    if (this.hour >= 13 && this.hour <= 18) {
+      this.messagesArray[0] = "¡ Buenas tardes !";
     }
   }
 
   public setMessage_1() {
     if (this.temp < 12) {
-      this.messagesArray[1] = 'Hoy es un día frío';
-    } if (this.temp > 11 && this.temp < 18) {
-      this.messagesArray[1] = 'Hoy es un día fresco';
-    } if (this.temp > 17 && this.temp < 26) {
-      this.messagesArray[1] = 'Hoy es un día templado';
-    } if (this.temp > 25) {
-      this.messagesArray[1] = 'Hoy es un dia caluroso';
+      this.messagesArray[1] = "Hoy es un día frío";
+    }
+    if (this.temp > 11 && this.temp < 18) {
+      this.messagesArray[1] = "Hoy es un día fresco";
+    }
+    if (this.temp > 17 && this.temp < 26) {
+      this.messagesArray[1] = "Hoy es un día templado";
+    }
+    if (this.temp > 25) {
+      this.messagesArray[1] = "Hoy es un dia caluroso";
     }
   }
 
   public setMessage_2() {
     if (this.wind < 10) {
-      this.messagesArray[2] = 'El viento está calmo';
-    } if (this.wind > 9 && this.wind < 16) {
-      this.messagesArray[2] = 'Hay algo de viento';
-    } if (this.wind > 15 && this.wind < 21) {
-      this.messagesArray[2] = 'Hay viento moderado';
-    } if (this.wind > 20 && this.wind < 26) {
-      this.messagesArray[2] = 'Hay bastante viento';
-    } if (this.wind > 25) {
-      this.messagesArray[2] = '¡El viento está fuerte!';
+      this.messagesArray[2] = "El viento está calmo";
+    }
+    if (this.wind > 9 && this.wind < 16) {
+      this.messagesArray[2] = "Hay algo de viento";
+    }
+    if (this.wind > 15 && this.wind < 21) {
+      this.messagesArray[2] = "Hay viento moderado";
+    }
+    if (this.wind > 20 && this.wind < 26) {
+      this.messagesArray[2] = "Hay bastante viento";
+    }
+    if (this.wind > 25) {
+      this.messagesArray[2] = "¡El viento está fuerte!";
     }
   }
 
@@ -118,14 +192,15 @@ export class HomeComponent implements OnInit {
   }
 
   public setMessage_4() {
-    this.messagesArray[4] = `La visibilidad es de ${(this.visibility)/1000} km`;
+    this.messagesArray[4] = `La visibilidad es de ${this.visibility / 1000} km`;
   }
 
   public setMessage_5() {
     if (this.press < 1013) {
-      this.messagesArray[5] = 'La presión atmosférica es baja';
-    } if (this.press >= 1013) {
-      this.messagesArray[5] = 'La presión atmosférica es alta';
+      this.messagesArray[5] = "La presión atmosférica es baja";
+    }
+    if (this.press >= 1013) {
+      this.messagesArray[5] = "La presión atmosférica es alta";
     }
   }
 }
